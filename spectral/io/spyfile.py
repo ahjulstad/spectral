@@ -112,6 +112,7 @@ from __future__ import division, print_function, unicode_literals
 
 import numpy
 import numpy as np
+import sys
 from spectral import SpyException
 from spectral.spectral import Image
 
@@ -235,7 +236,10 @@ class SpyFile(Image):
         self.fid.seek(self.offset)
         data.fromfile(self.fid, self.nrows * self.ncols *
                       self.nbands * self.sample_size)
-        npArray = np.fromstring(data.tostring(), dtype=self.dtype)
+        if (sys.version_info > (3,2)):
+            npArray = np.fromstring(data.tobytes(), dtype=self.dtype)
+        else:
+            npArray = np.fromstring(data.tostring(), dtype=self.dtype)
         if self.interleave == spectral.BIL:
             npArray.shape = (self.nrows, self.nbands, self.ncols)
             npArray = npArray.transpose([0, 2, 1])
